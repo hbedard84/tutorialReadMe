@@ -1,1 +1,220 @@
-# practice
+# Two Factor Authentication Tutorial
+Please watch the video tutorial accompanying this repo at: [YOUTUBE LINK]
+
+The tutorial starter files are found in the StarterCode directory at https://github.com/ConnorWatsonGitHub/2FactorAuthenticationDemo.  
+
+Completing the tutorial will result in the code found in the FinalDemo directory, including 2FA functionality. 
+
+## Part 1:  Set Up Initial Project with Basic Login Strategy
+
+### Step 1 - Clone repo and open StarterCode project 
+
+The cloned starter code provides a base Express project, with handlebars templating and basic login function  
+
+*Note:  If you prefer to create the project from scratch, find a basic overview for creating the base project at the end of ReadMe
+
+## Part 2:  Implementing 2FA – TOTL method
+TOTL (Time-Based One-time Password) first requires the user to be pre-authenticated with basic login credentials.
+
+Then the user is given a QR code, which they scan using Google Authenticator app.  
+When the resulting token is verified, 2FA is completed and the user is fully authenticated.
+
+To test this method, you will need to download the Google Authenticator App for your phone.
+
+### Step 1:  Prepare Project File Structure 
+- In routes folder, add file googleAuthenticator.js
+- In views folder, add file account.hbs
+- In views folder, add a new folder googleAuthenticator
+- In views/googleAuthenticator folder, add 3 files: index.hbs, twoFactorSuccess.hbs, validateCode.hbs
+
+### Step 2:  Set up project to store the user's 2FA method preference
+- In models/user.js, add 2 fields to schema definition:  
+  `secretKey: String,
+   twoFAMethod: String`
+- In views/account.hbs, create buttons which will save the user's preferred 2FA method to the user account and update the model 
+
+  `<a class="btn btn-primary" href="./googleAuthenticator/" >Google Authentication</a>`
+
+### Step 3:  Connect authenticator router in app.js
+- Above the index router require (line 11), insert `var googleAuthenticatorRouter = require('./routes/googleAuthenticator');`
+- Above the index router use (line 47), insert `app.use('/googleAuthenticator', googleAuthenticatorRouter);`
+
+### Step 4:  Install the Required NPM Packages
+- In terminal, be sure you are in the project directory, then run these commands:
+  - `npm i speakeasy`
+  - `npm i node-qrcode`
+
+### Step 5:  Configure the authenticator router
+- Open routes/googleAuthenticator.js
+- Import express, passport and the user model, and create the router object
+  
+  `var express = require('express');
+  var router = express.Router();
+  const User = require('../models/user');
+  const passport = require('passport');`
+- Import the npm modules
+
+  `const speakeasy = require("speakeasy");   
+   const QRCode = require('qrcode');`
+- Add the IsLoggedIn middleware function for checking that the user is logged in and authenticated
+
+  `function IsLoggedIn(req, res, next) {
+    if (req.isAuthenticated()) {
+        return next();
+    }
+    res.redirect('/login');
+}`
+- Configure GET Handler for /
+  - This generates a secret key via speakeasy, stores it in the user's file, and then shows QR code
+ 
+    `router.get('/', IsLoggedIn, function (req, res, next) {
+        var encodedKey = speakeasy.generateSecret().base32;
+        var otpUrl = 'otpauth://totp/' + req.user.username +
+             '?secret=' + encodedKey + '&period=30';
+        var qrImage = 'https://chart.googleapis.com/chart?chs=166x166&chld=L|0&cht=qr&chl=' + encodeURIComponent(otpUrl);        
+        User.findOneAndUpdate({
+                _id: req.user._id
+            }, {
+                secretKey: encodedKey,
+                twoFAMethod: "google"
+            },
+            function (error, success) {
+                if (error) {
+                    console.log(error);
+                } else {
+                    console.log(success);
+                }
+            });        
+        res.render('googleAuthenticator/index', {
+            user: req.user,
+            qrImage: qrImage,
+            key: encodedKey,
+        });    
+});`
+
+ - Configure GET Handler for /validateCode
+  
+   `router.get('/validateCode', IsLoggedIn, (req, res, next) => {
+    res.render('googleAuthenticator/validateCode', {
+        title: 'Add Recommendations',
+        user: req.user
+    });
+});`
+
+  - Configure POST Handler for /validateCode
+    - This verifies the token using the user's secret key
+    
+      `router.post('/validateCode', (req, res, next) => {
+    let userToken = req.body.code;
+    let base32secret = req.user.secretKey;
+    let verified = speakeasy.totp.verify({  secret: base32secret,
+                                            encoding: 'base32',
+                                            token: userToken});
+    if (verified) {
+        res.redirect('/googleAuthenticator/twoFactorSuccess');
+    }
+    else {
+        res.redirect('/googleAuthenticator/validateCode');
+    }
+});`
+
+  - Configure GET Handler for /twoFactorSuccess
+    - This is the view user sees when 2FA is complete
+    
+      `router.get('/twoFactorSuccess', IsLoggedIn, (req, res, next) => {
+    res.render('googleAuthenticator/twoFactorSuccess', {
+        title: 'Two Factor Success',
+        user: req.user
+    });
+});`
+
+  - Finally, at the end of the file, export the router object
+  
+    `module.exports = router;`
+
+### Step 6 - Prepare the Authenticator Views
+- views/googleAuthenticator/index.hbs
+  - This view shows to the generated QR code to the user to scan
+  
+    `<p> Scan this QR Code in Google Authenticator </p> 
+<img src = "{{ qrImage }}" />`
+
+- views/googleAuthenticator/validateCode
+  - This view asks the user to enter the validation code received from Google Authenticator after scanning the QR code
+  
+    `<form method="post">`
+    `<div>`
+       `<label>Code:</label>`
+        `<input type="text" name="code" id="code" /><br />`
+    `</div>`
+    `<div>`
+        `<button>Submit</button>`
+    `</div>`
+`</form>` 
+
+- views/googleAuthenticator/
+  - This view tells the user they were successfully authenticated with 2FA
+  
+    `<h1>2 FACTOR AUTHENTICATION WORKED!!!!!</h1>`  
+    
+### Congratulations, you have successfully implemented 2FA using TOTL!
+
+
+
+
+# Part 3: Implementing 2FA – SMS/Email method (or whatever Michael does)
+-	Sign up for Twilio (via GitHub Education Pack - $50 free credit for students)???
+
+
+
+
+
+
+
+# Start Here If Creating the Project from Scratch (no cloning)
+
+### Step 1 - Create a new Express project, with handlebars templating:
+- Open a new project, open the terminal, navigate to the project directory, then run these commands:
+- `npm i express`
+- `npm i express-generator`
+- `npx express-generator --view=hbs`, then `y` to continue
+- `npm install`
+- `npm i mongoose`
+- `npm i passport passport-local passport-local-mongoose express-session`
+
+### Step 2:  Prepare file structure
+- In root folder, add config directory, containing file globals.js
+- In root folder, add models directory, containing file user.js
+- In routes folder, delete file users.js
+- In views folder, add 3 files: login.hbs, loginSuccess.hbs, register.hbs
+
+### Step 3:  Modify app.js
+- Delete line 8: `var usersRouter = require('./routes/users');`
+- Delete line 22: `app.use('/users', usersRouter);`
+- Import the required modules and models 
+- Configure MongoDB Connection (secure your connection string by putting it in config/globals.js)
+- Initialize Passport and configure Passport Session Cookie
+- Create Passport Strategy and Serialization for User  
+
+### Step 4:  Add User Model
+- In models/user.js, import mongoose and passport-local-mongoose
+- Create a new mongoose schema definition for user containing username, password, oauthID, oauthProvider, and created
+- Plugin passport-local-mongoose and export the schema as a new User model
+
+### Step 5:  Add Views
+- In views/login.hbs, create a form (post method) to login user, with inputs for username and password and a login button.
+- In views/register.hbs, create a form (post method) to register user, with inputs for username, password, confirm password, and register button
+- Add any desired custom design/styling
+
+### Step 6:  Add Routes
+- In routes/index.js
+  - add middleware function IsLoggedIn for checking if user is logged in and authenticated via passport
+  - add the following routes:
+   - get and post handlers for /login
+   - get and post handlers for /register
+   - get handler for /loginSuccess
+   - get handler for /logout
+
+### Step 7:  Proceed to Part 2 of Tutorial
+
+
