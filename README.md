@@ -3,23 +3,25 @@ Please watch the video tutorial accompanying this repo at: [YOUTUBE LINK]
 
 The tutorial starter files are found in the StarterCode directory at https://github.com/ConnorWatsonGitHub/2FactorAuthenticationDemo.  
 
-Completing the tutorial will result in the code found in the FinalDemo directory, including 2FA functionality. 
+Completing the tutorial will result in the code found in the FinalDemo directory, implementing 2FA functionality. 
 
 ## Part 1:  Set Up Initial Project with Basic Login Strategy
 
 ### Step 1 - Clone repo and open StarterCode project 
 
-The cloned starter code provides a base Express project, with handlebars templating and basic login function  
+The cloned starter code provides a base Express project, with handlebars templating and basic login function.
+Basic login sets up the first authentication factor. 
 
-*Note:  If you prefer to create the project from scratch, find a basic overview for creating the base project at the end of ReadMe
+*Note:  If you prefer to create the project from scratch, find a basic overview for creating the base project at the end of this ReadMe.*
 
-## Part 2:  Implementing 2FA – TOTL method
+## Part 2:  Implementing 2FA – TOTL method with Google Authenticator and QR Codes
 TOTL (Time-Based One-time Password) first requires the user to be pre-authenticated with basic login credentials.
 
-Then the user is given a QR code, which they scan using Google Authenticator app.  
+Then the user is given a QR code, which they scan using Google Authenticator app.
+Google Authenticator provides user with an authentication token, which is entered into the site.
 When the resulting token is verified, 2FA is completed and the user is fully authenticated.
 
-To test this method, you will need to download the Google Authenticator App for your phone.
+*Important: To test this method, you will need to download the Google Authenticator App for your phone.*
 
 ### Step 1:  Prepare Project File Structure 
 - In routes folder, add file googleAuthenticator.js
@@ -157,13 +159,10 @@ To test this method, you will need to download the Google Authenticator App for 
   
     `<h1>2 FACTOR AUTHENTICATION WORKED!!!!!</h1>`  
     
-### Congratulations, you have successfully implemented 2FA using TOTL!
+### Congratulations, you have successfully implemented 2FA using Google Authenticator!
 
+# Part 3: Implementing 2FA – SMS method 
 
-
-
-# Part 3: Implementing 2FA – SMS/Email method (or whatever Michael does)
--	Sign up for Twilio (via GitHub Education Pack - $50 free credit for students)???
 
 
 
@@ -171,7 +170,7 @@ To test this method, you will need to download the Google Authenticator App for 
 
 
 
-# Start Here If Creating the Project from Scratch (no cloning)
+# Start Here If Creating the Project from Scratch (without cloning)
 
 ### Step 1 - Create a new Express project, with handlebars templating:
 - Open a new project, open the terminal, navigate to the project directory, then run these commands:
