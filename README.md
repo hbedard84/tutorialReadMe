@@ -136,9 +136,26 @@ When the resulting token is verified, 2FA is completed and the user is fully aut
 ### Prepare the Authenticator Views
 - views/googleAuthenticator/index.hbs
   - This view shows to the generated QR code to the user to scan
+  - Then asks the user to enter the validation code received from Google Authenticator after scanning the QR code
   
-    `<p> Scan this QR Code in Google Authenticator </p> 
-<img src = "{{ qrImage }}" />`
+    `{{#if messages}}`
+    `<div class="alert alert-danger">`
+    `{{messages}}`
+    `</div>`
+    `{{/if}}`
+    `<h3> Scan this QR Code in Google Authenticator </h3> `
+    `<img src = "{{ qrImage }}" />`
+    `<h3>Please enter code from your Google Authenticator App</h3>`
+    `<form method="post">`
+    `<div class="enterCode">`
+        `<label>Code:</label>`
+       ` <input type="text" name="code" id="code" /><br />`
+       ` <input name="key" id="key" type="hidden" value="{{key}}" />`
+    `</div>`
+   ` <div>`
+       ` <button>Submit</button>`
+    `</div>`
+    `</form>`
 
 - views/googleAuthenticator/validateCode
   - This view asks the user to enter the validation code received from Google Authenticator after scanning the QR code
@@ -207,5 +224,7 @@ When the resulting token is verified, 2FA is completed and the user is fully aut
    - get handler for /logout
 
 ### Proceed to Part 2 of Tutorial
+
+
 
 
