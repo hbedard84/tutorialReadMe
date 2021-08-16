@@ -1,5 +1,4 @@
 # Two Factor Authentication Tutorial
-Please watch the video tutorial accompanying this repo at: [YOUTUBE LINK]
 
 The tutorial starter files are found in the StarterCode directory at https://github.com/ConnorWatsonGitHub/2FactorAuthenticationDemo.  
 
@@ -7,7 +6,7 @@ Completing the tutorial will result in the code found in the FinalDemo directory
 
 ## Part 1:  Set Up Initial Project with Basic Login Strategy
 
-### Step 1 - Clone repo and open StarterCode project 
+### Clone repo and open StarterCode project 
 
 The cloned starter code provides a base Express project, with handlebars templating and basic login function.
 Basic login sets up the first authentication factor. 
@@ -23,30 +22,30 @@ When the resulting token is verified, 2FA is completed and the user is fully aut
 
 *Important: To test this method, you will need to download the Google Authenticator App for your phone.*
 
-### Step 1:  Prepare Project File Structure 
+### Prepare Project File Structure 
 - In routes folder, add file googleAuthenticator.js
 - In views folder, add file account.hbs
 - In views folder, add a new folder googleAuthenticator
 - In views/googleAuthenticator folder, add 3 files: index.hbs, twoFactorSuccess.hbs, validateCode.hbs
 
-### Step 2:  Set up project to store the user's 2FA method preference
+### Set up project to store the user's 2FA method preference
 - In models/user.js, add 2 fields to schema definition:  
   `secretKey: String,
    twoFAMethod: String`
-- In views/account.hbs, create buttons which will save the user's preferred 2FA method to the user account and update the model 
+- In views/account.hbs, create button which will direct the user to the 2FA view
 
   `<a class="btn btn-primary" href="./googleAuthenticator/" >Google Authentication</a>`
 
-### Step 3:  Connect authenticator router in app.js
-- Above the index router require (line 11), insert `var googleAuthenticatorRouter = require('./routes/googleAuthenticator');`
-- Above the index router use (line 47), insert `app.use('/googleAuthenticator', googleAuthenticatorRouter);`
+### Connect authenticator router in app.js
+- Above the index router require, insert `var googleAuthenticatorRouter = require('./routes/googleAuthenticator');`
+- Above the index router use, insert `app.use('/googleAuthenticator', googleAuthenticatorRouter);`
 
-### Step 4:  Install the Required NPM Packages
+### Install the Required NPM Packages
 - In terminal, be sure you are in the project directory, then run these commands:
   - `npm i speakeasy`
   - `npm i node-qrcode`
 
-### Step 5:  Configure the authenticator router
+### Configure the authenticator router
 - Open routes/googleAuthenticator.js
 - Import express, passport and the user model, and create the router object
   
@@ -134,7 +133,7 @@ When the resulting token is verified, 2FA is completed and the user is fully aut
   
     `module.exports = router;`
 
-### Step 6 - Prepare the Authenticator Views
+### Prepare the Authenticator Views
 - views/googleAuthenticator/index.hbs
   - This view shows to the generated QR code to the user to scan
   
@@ -161,18 +160,11 @@ When the resulting token is verified, 2FA is completed and the user is fully aut
     
 ### Congratulations, you have successfully implemented 2FA using Google Authenticator!
 
-# Part 3: Implementing 2FA – SMS method 
-
-
-
-
-
-
 
 
 # Start Here If Creating the Project from Scratch (without cloning)
 
-### Step 1 - Create a new Express project, with handlebars templating:
+### Create a new Express project, with handlebars templating:
 - Open a new project, open the terminal, navigate to the project directory, then run these commands:
 - `npm i express`
 - `npm i express-generator`
@@ -181,13 +173,13 @@ When the resulting token is verified, 2FA is completed and the user is fully aut
 - `npm i mongoose`
 - `npm i passport passport-local passport-local-mongoose express-session`
 
-### Step 2:  Prepare file structure
+### Prepare file structure
 - In root folder, add config directory, containing file globals.js
 - In root folder, add models directory, containing file user.js
 - In routes folder, delete file users.js
 - In views folder, add 3 files: login.hbs, loginSuccess.hbs, register.hbs
 
-### Step 3:  Modify app.js
+### Modify app.js
 - Delete line 8: `var usersRouter = require('./routes/users');`
 - Delete line 22: `app.use('/users', usersRouter);`
 - Import the required modules and models 
@@ -195,17 +187,17 @@ When the resulting token is verified, 2FA is completed and the user is fully aut
 - Initialize Passport and configure Passport Session Cookie
 - Create Passport Strategy and Serialization for User  
 
-### Step 4:  Add User Model
+### Add User Model
 - In models/user.js, import mongoose and passport-local-mongoose
 - Create a new mongoose schema definition for user containing username, password, oauthID, oauthProvider, and created
 - Plugin passport-local-mongoose and export the schema as a new User model
 
-### Step 5:  Add Views
+### Add Views
 - In views/login.hbs, create a form (post method) to login user, with inputs for username and password and a login button.
 - In views/register.hbs, create a form (post method) to register user, with inputs for username, password, confirm password, and register button
 - Add any desired custom design/styling
 
-### Step 6:  Add Routes
+### Add Routes
 - In routes/index.js
   - add middleware function IsLoggedIn for checking if user is logged in and authenticated via passport
   - add the following routes:
@@ -214,6 +206,6 @@ When the resulting token is verified, 2FA is completed and the user is fully aut
    - get handler for /loginSuccess
    - get handler for /logout
 
-### Step 7:  Proceed to Part 2 of Tutorial
+### Proceed to Part 2 of Tutorial
 
 
